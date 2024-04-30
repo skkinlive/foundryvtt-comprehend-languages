@@ -8,17 +8,17 @@ declare global {
     class CanvasColorManager {
         /** Colors exposed by the manager. */
         colors: {
-            darkness: foundry.utils.Color;
-            halfdark: foundry.utils.Color;
-            background: foundry.utils.Color;
-            dim: foundry.utils.Color;
-            bright: foundry.utils.Color;
-            ambientBrightest: foundry.utils.Color;
-            ambientDaylight: foundry.utils.Color;
-            ambientDarkness: foundry.utils.Color;
-            sceneBackground: foundry.utils.Color;
-            fogExplored: foundry.utils.Color;
-            fogUnexplored: foundry.utils.Color;
+            darkness: Color;
+            halfdark: Color;
+            background: Color;
+            dim: Color;
+            bright: Color;
+            ambientBrightest: Color;
+            ambientDaylight: Color;
+            ambientDarkness: Color;
+            sceneBackground: Color;
+            fogExplored: Color;
+            fogUnexplored: Color;
         };
 
         /** Weights used by the manager to compute colors. */
@@ -55,9 +55,9 @@ declare global {
             fogExploredColor,
             fogUnexploredColor,
         }?: {
-            backgroundColor?: foundry.utils.Color | number | string;
-            brightestColor?: foundry.utils.Color | number | string;
-            darknessColor?: foundry.utils.Color | number | string;
+            backgroundColor?: Color | number | string;
+            brightestColor?: Color | number | string;
+            darknessColor?: Color | number | string;
             darknessLevel?: number;
             daylightColor?: number;
             fogExploredColor?: number;

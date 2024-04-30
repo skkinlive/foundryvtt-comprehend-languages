@@ -2,18 +2,22 @@ export {};
 
 declare global {
     /** A type of RollTerm used to capture static numbers. */
-    class NumericTerm<TData extends NumericTermData = NumericTermData> extends RollTerm<TData> {
+    class NumericTerm extends RollTerm {
         constructor({ number, options }: NumericTermData);
 
         number: number;
 
-        static override REGEXP: RegExp;
+        /** @override */
+        static REGEXP: RegExp;
 
-        static override SERIALIZE_ATTRIBUTES: ["number"];
+        /** @override */
+        static SERIALIZE_ATTRIBUTES: ["number"];
 
-        override get expression(): string;
+        /** @override */
+        get expression(): string;
 
-        override get total(): number;
+        /** @override */
+        get total(): number;
 
         /* -------------------------------------------- */
         /*  Factory Methods                             */
@@ -30,11 +34,10 @@ declare global {
          * @param match The matched regular expression array
          * @return The constructed term
          */
-        static fromMatch<T extends NumericTerm<NumericTermData>>(this: T, match: RegExpMatchArray): T;
+        static fromMatch<T extends NumericTerm>(this: T, match: RegExpMatchArray): T;
     }
 
     interface NumericTermData extends RollTermData {
-        class?: "NumericTerm";
-        number: number;
+        number?: number;
     }
 }

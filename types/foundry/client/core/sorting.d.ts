@@ -19,13 +19,11 @@ declare class SortingHelpers {
      */
     static performIntegerSort<T extends object>(
         source: T,
-        { target, siblings, sortKey, sortBefore }: SortingOptions<T>,
+        {
+            target,
+            siblings,
+            sortKey,
+            sortBefore,
+        }: { target?: T; siblings?: T[]; sortKey?: string; sortBefore?: boolean }
     ): { target: T; update: Record<string, number> }[];
-}
-
-declare interface SortingOptions<T extends object = object> {
-    target?: T;
-    siblings?: T[];
-    sortKey?: string;
-    sortBefore?: boolean;
 }

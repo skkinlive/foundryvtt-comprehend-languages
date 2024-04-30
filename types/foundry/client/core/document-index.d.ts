@@ -10,7 +10,7 @@ declare global {
      * @property [pack]       The pack ID.
      */
     interface WordTreeEntry {
-        entry: foundry.abstract.Document | object;
+        entry: ClientDocument | object;
         documentName: WorldDocument["documentName"];
         uuid: string;
         pack?: string;
@@ -72,7 +72,7 @@ declare global {
             node: WordTreeNode,
             entries: WordTreeEntry[],
             queue: WordTreeNode[],
-            options?: { limit?: number },
+            options?: { limit?: number }
         ): void;
     }
 
@@ -111,19 +111,19 @@ declare global {
          * Add an entry to the index.
          * @param doc The document entry.
          */
-        addDocument(doc: foundry.abstract.Document): void;
+        addDocument(doc: ClientDocument): void;
 
         /**
          * Remove an entry from the index.
          * @param doc The document entry.
          */
-        removeDocument(doc: foundry.abstract.Document): void;
+        removeDocument(doc: ClientDocument): void;
 
         /**
          * Replace an entry in the index with an updated one.
          * @param doc The document entry.
          */
-        replaceDocument(doc: foundry.abstract.Document): void;
+        replaceDocument(doc: ClientDocument): void;
 
         /**
          * Add a leaf node to the word tree index.

@@ -1,68 +1,64 @@
-/** An abstract pattern for primary layers of the game canvas to implement */
+/**
+ * An abstract pattern for primary layers of the game canvas to implement
+ */
 declare abstract class CanvasLayer extends PIXI.Container {
-    /** Options for this layer instance. */
-    options: CanvasLayerOptions;
+    /**
+     * Track whether the canvas layer is currently active for interaction
+     */
+    protected _active: boolean;
 
-    /** Default interactivity */
+    interactive: boolean;
+
     interactiveChildren: boolean;
 
-    /* -------------------------------------------- */
-    /*  Layer Attributes                            */
-    /* -------------------------------------------- */
+    constructor();
 
-    /** Customize behaviors of this CanvasLayer by modifying some behaviors at a class level. */
+    /**
+     * Customize behaviors of this CanvasLayer by modifying some behaviors at a class level.
+     * @property zIndex        The zIndex sorting of this layer relative to other layers
+     * @property sortActiveTop Should this layer be sorted to the top when it is active?
+     */
     static get layerOptions(): CanvasLayerOptions;
 
-    /** Return a reference to the active instance of this canvas layer */
+    /**
+     * Return a reference to the active instance of this canvas layer
+     */
     static get instance(): CanvasLayer;
 
     /**
-     * The canonical name of the CanvasLayer is the name of the constructor that is the immediate child of the
-     * defined baseClass for the layer type.
-     *
-     * @example
-     * canvas.lighting.name -> "LightingLayer"
-     * canvas.grid.name -> "GridLayer"
+     * The canonical name of the CanvasLayer
      */
-    get name(): string;
+    readonly name: string;
+
+    /** Deconstruct data used in the current layer in preparation to re-draw the canvas */
+    tearDown(): void;
 
     /**
-     * The name used by hooks to construct their hook string.
-     * Note: You should override this getter if hookName should not return the class constructor name.
-     */
-    get hookName(): string;
-
-    /* -------------------------------------------- */
-    /*  Rendering                                   */
-    /* -------------------------------------------- */
-
-    /**
-     * Draw the canvas layer, rendering its internal components and returning a Promise.
+     * Draw the canvas layer, rendering its internal components and returning a Promise
      * The Promise resolves to the drawn layer once its contents are successfully rendered.
-     * @param options Options which configure how the layer is drawn
      */
-    draw(options?: object): Promise<this>;
+    draw(): Promise<this>;
 
     /**
-     * The inner _draw method which must be defined by each CanvasLayer subclass.
-     * @param options Options which configure how the layer is drawn
+     * Activate the CanvasLayer, deactivating other layers and marking this layer's children as interactive.
+     * @return The layer instance, now activated
      */
-    protected abstract _draw(options?: object): Promise<void>;
+    activate(): this;
 
     /**
-     * Deconstruct data used in the current layer in preparation to re-draw the canvas
-     * @param options Options which configure how the layer is deconstructed
+     * Deactivate the CanvasLayer, removing interactivity from its children.
+     * @return The layer instance, now inactive
      */
-    tearDown(options?: object): Promise<this>;
+    deactivate(): this | void;
 
-    /**
-     * The inner _tearDown method which may be customized by each CanvasLayer subclass.
-     * @param options Options which configure how the layer is deconstructed
-     */
-    protected _tearDown(options?: object): Promise<void>;
+    /** Get the zIndex that should be used for ordering this layer vertically relative to others in the same Container. */
+    getZIndex(): number;
 }
 
 declare interface CanvasLayerOptions {
     name: string;
-    baseClass: string;
+    zIndex: number;
+    sortActiveTop: boolean;
+    controllableObjects?: boolean;
+    rotatableObjects?: boolean;
 }

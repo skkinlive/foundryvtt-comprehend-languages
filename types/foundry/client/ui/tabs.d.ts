@@ -1,7 +1,6 @@
 declare interface TabsOptions {
     navSelector?: string;
     contentSelector?: string;
-    group?: string;
     initial?: string;
     callback?: Function;
 }
@@ -46,22 +45,22 @@ declare class Tabs {
     /**
      * The CSS selector used to target the tab navigation element
      */
-    _navSelector: string;
+    protected _navSelector: string;
 
     /**
      * A reference to the HTML navigation element the tab controller is bound to
      */
-    _nav: HTMLElement | null;
+    protected _nav: HTMLElement | null;
 
     /**
      * The CSS selector used to target the tab content element
      */
-    _contentSelector: string;
+    protected _contentSelector: string;
 
     /**
      * A reference to the HTML container element of the tab content
      */
-    _content: HTMLElement | null;
+    protected _content: HTMLElement | null;
 
     constructor({ navSelector, contentSelector, initial, callback }: TabsOptions);
 

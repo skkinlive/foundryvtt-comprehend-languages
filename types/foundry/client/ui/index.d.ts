@@ -1,36 +1,27 @@
-import "./context.d.ts";
-import "./dialog.d.ts";
-import "./dragdrop.d.ts";
-import "./editor.d.ts";
-import "./filepicker.d.ts";
-import "./notifications.d.ts";
-import "./prosemirror.d.ts";
-import "./secrets.d.ts";
-import "./tabs.d.ts";
-import "./tooltip.d.ts";
-import "./tour.d.ts";
+import "./context";
+import "./dialog";
+import "./drag-drop";
+import "./filepicker";
+import "./notifications";
+import "./tabs";
+import "./tooltip";
 
 declare global {
     interface FoundryUI<
-        TActorDirectory extends ActorDirectory<Actor<null>>,
-        TItemDirectory extends ItemDirectory<Item<null>>,
+        TActor extends Actor,
+        TItem extends Item,
         TChatLog extends ChatLog,
-        TCompendiumDirectory extends CompendiumDirectory,
-        TCombatTracker extends CombatTracker<Combat | null>,
-        THotbar extends Hotbar,
+        TCompendiumDirectory extends CompendiumDirectory
     > {
-        actors: TActorDirectory;
+        actors: ActorDirectory<TActor>;
         chat: TChatLog;
-        combat: TCombatTracker;
+        combat: CombatTracker<Combat>;
         compendium: TCompendiumDirectory;
         controls: SceneControls;
-        items: TItemDirectory;
+        items: ItemDirectory<TItem>;
         notifications: Notifications;
         settings: Settings;
-        sidebar: Sidebar;
         tables: RollTableDirectory;
         windows: Record<number, Application>;
-        hotbar: THotbar;
-        nav: SceneNavigation;
     }
 }

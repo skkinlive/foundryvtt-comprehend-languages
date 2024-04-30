@@ -26,58 +26,47 @@ declare global {
 
         /**
          * Push a new notification into the queue
-         * @param message The content of the notification message
-         * @param type    The type of notification, "info", "warning", and "error" are supported
+         * @param message      The content of the notification message
+         * @param type         The type of notification, currently "info", "warning", and "error" are supported
          * @param [options={}] Additional options which affect the notification
-         * @returns The ID of the notification
+         * @param [options.permanent=false]   Whether the notification should be permanently displayed unless otherwise dismissed
+         * @param [options.localize=false]    Whether to localize the message content before displaying it
          */
-        notify(message: string, type?: "info" | "warning" | "error", { localize, permanent }?: NotifyOptions): number;
+        notify(
+            message: string,
+            type?: "info" | "warning" | "error",
+            { localize, permanent }?: NotificationOptions
+        ): void;
 
         /**
          * Display a notification with the "info" type
-         * @param message   The content of the notification message
-         * @param [options] Notification options passed to the notify function
-         * @returns The ID of the notification
+         * @param message The content of the notification message
+         * @param options Notification options passed to the notify function
          */
-        info(message: string, options?: NotifyOptions): number;
+        info(message: string, options?: NotificationOptions): void;
 
         /**
-         * Display a notification with the "info" type
-         * @param message   The content of the notification message
-         * @param [options] Notification options passed to the notify function
-         * @returns The ID of the notification
+         * Display a notification with the "warning" type
+         * @param message The content of the notification message
+         * @param options Notification options passed to the notify function
          */
-        warn(message: string, options?: NotifyOptions): number;
+        warn(message: string, options?: NotificationOptions): void;
 
         /**
-         * Display a notification with the "info" type
-         * @param message   The content of the notification message
-         * @param [options] Notification options passed to the notify function
-         * @returns The ID of the notification
+         * Display a notification with the "error" type
+         * @param message The content of the notification message
+         * @param options Notification options passed to the notify function
          */
-        error(message: string, options?: NotifyOptions): number;
-
-        /**
-         * Remove the notification linked to the ID.
-         * @param id The ID of the notification
-         */
-        remove(id: number): void;
-
-        /** Clear all notifications. */
-        clear(): void;
+        error(message: string, options?: NotificationOptions): void;
 
         /** Retrieve a pending notification from the queue and display it */
         fetch(): void;
     }
 }
 
-interface NotifyOptions {
-    /** Should the notification be permanently displayed until dismissed */
-    permanent?: boolean;
-    /** to localize the message content before displaying it */
+interface NotificationOptions {
     localize?: boolean;
-    /** Whether to log the message to the console */
-    console?: boolean;
+    permanent?: boolean;
 }
 
 interface NotificationData {

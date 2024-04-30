@@ -9,7 +9,7 @@ declare global {
      * 2) Ruler measurement
      * 3) Map pings
      */
-    class ControlsLayer extends InteractionLayer {
+    class ControlsLayer extends CanvasLayer {
         constructor();
 
         /** A container of DoorControl instances */
@@ -47,9 +47,9 @@ declare global {
         /** Get the Ruler display for a specific User ID */
         getRulerForUser(userId: string): Ruler | null;
 
-        protected override _draw(): Promise<void>;
+        override draw(): Promise<this>;
 
-        protected override _tearDown(): Promise<void>;
+        override tearDown(): Promise<void>;
 
         /** Draw the cursors container */
         drawCursors(): void;
@@ -63,14 +63,14 @@ declare global {
          */
         drawSelect({ x, y, width, height }: { x: number; y: number; width: number; height: number }): void;
 
-        protected override _deactivate(): void;
+        override deactivate(): void;
 
         /* -------------------------------------------- */
         /*  Event Listeners and Handlers                */
         /* -------------------------------------------- */
 
         /** Handle mousemove events on the game canvas to broadcast activity of the user's cursor position */
-        protected _onMouseMove(event: PIXI.FederatedEvent): void;
+        protected _onMouseMove(event: PIXI.InteractionEvent): void;
 
         /* -------------------------------------------- */
         /*  Methods                                     */

@@ -1,20 +1,18 @@
 {
     "compilerOptions": {
-        "target": "ES2022",
-        "module": "NodeNext",
-        "moduleResolution": "NodeNext",
+        "module": "es2020",
+        "moduleResolution": "node",
+        "target": "es2018",
         "lib": [
-            "esnext",
-            "dom"
+            "dom",
+            "es2017"
         ],
         "strict": true,
         "noImplicitOverride": true,
-        "noEmit": true,
-        "esModuleInterop": true,
-        "allowImportingTsExtensions": true
+        "noEmit": true
     },
     "files": [
-        "index.d.ts",
-        "util.d.ts"
+        "./index.d.ts",
+        "./utils.d.ts"
     ]
 }

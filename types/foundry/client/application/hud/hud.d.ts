@@ -32,6 +32,6 @@ declare global {
         classes: string;
         appId: number;
         isGM: boolean;
-        icons: ControlIconsConfig;
+        icons: Config["controlIcons"];
     };
 }

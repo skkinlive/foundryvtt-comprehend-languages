@@ -3,11 +3,13 @@
  * The Settings sidebar is the furthest-to-right using a triple-cogs icon.
  */
 declare class Settings extends SidebarTab {
-    static override get defaultOptions(): ApplicationOptions;
+    /** @override */
+    static get defaultOptions(): ApplicationOptions;
 
-    override getData(options?: {}): {
+    /** @override */
+    getData(options?: {}): {
         user: User;
-        system: object;
+        system: Game["system"];
         coreVersion: string;
         canConfigure: boolean;
         canSetup: boolean;
@@ -15,8 +17,12 @@ declare class Settings extends SidebarTab {
         modules: unknown;
     };
 
-    override activateListeners(html: JQuery): void;
+    /** @override */
+    activateListeners(html: JQuery): void;
 
-    /** Delegate different actions for different settings buttons */
+    /**
+     * Delegate different actions for different settings buttons
+     * @param event
+     */
     protected _onSettingsButton(event: MouseEvent): void;
 }
