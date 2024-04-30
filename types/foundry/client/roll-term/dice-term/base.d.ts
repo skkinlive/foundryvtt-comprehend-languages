@@ -105,16 +105,7 @@ declare global {
          * Render the tooltip HTML for a Roll instance
          * @return The data object used to render the default tooltip template for this DiceTerm
          */
-        getTooltipData(): {
-            formula: string;
-            total: number;
-            faces: number;
-            flavor: string;
-            rolls: {
-                result: string;
-                classes: string;
-            };
-        };
+        getTooltipData(): DiceTermTooltipData;
 
         /* -------------------------------------------- */
         /*  Modifier Methods                            */
@@ -154,7 +145,7 @@ declare global {
         protected static _keepOrDrop<T extends DiceTermResult>(
             results: T[],
             number: number,
-            { keep, highest }?: { keep?: boolean; highest?: boolean }
+            { keep, highest }?: { keep?: boolean; highest?: boolean },
         ): T[];
 
         /**
@@ -164,7 +155,7 @@ declare global {
             results: T,
             comparison: ComparisonOperator,
             target: number,
-            { flagSuccess, flagFailure }?: { flagSuccess?: boolean; flagFailure?: boolean }
+            { flagSuccess, flagFailure }?: { flagSuccess?: boolean; flagFailure?: boolean },
         ): void;
 
         /** A reusable helper function to handle the identification and deduction of failures */
@@ -172,7 +163,7 @@ declare global {
             results: T[],
             comparison: ComparisonOperator,
             target: number,
-            { deductFailure, invertFailure }?: { deductFailure?: boolean; invertFailure?: boolean }
+            { deductFailure, invertFailure }?: { deductFailure?: boolean; invertFailure?: boolean },
         ): void;
 
         /* -------------------------------------------- */
@@ -225,4 +216,15 @@ declare global {
     }
 
     type ComparisonOperator = "=" | "<" | "<=" | ">" | ">=";
+
+    interface DiceTermTooltipData {
+        formula: string;
+        total: number;
+        faces: number;
+        flavor: string;
+        rolls: {
+            result: string;
+            classes: string;
+        };
+    }
 }

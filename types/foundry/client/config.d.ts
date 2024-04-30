@@ -2,24 +2,26 @@ import type * as TinyMCE from "tinymce";
 
 declare global {
     interface Config<
-        TAmbientLightDocument extends AmbientLightDocument = AmbientLightDocument,
-        TActiveEffect extends ActiveEffect = ActiveEffect,
-        TActor extends Actor = Actor,
-        TChatLog extends ChatLog = ChatLog,
-        TChatMessage extends ChatMessage = ChatMessage,
-        TCombat extends Combat = Combat,
-        TCombatant extends Combatant<TCombat | null, TActor | null> = Combatant<TCombat | null, TActor | null>,
-        TCombatTracker extends CombatTracker<TCombat | null> = CombatTracker<TCombat | null>,
-        TCompendiumDirectory extends CompendiumDirectory = CompendiumDirectory,
-        THotbar extends Hotbar = Hotbar,
-        TItem extends Item = Item,
-        TMacro extends Macro = Macro,
-        TMeasuredTemplateDocument extends MeasuredTemplateDocument = MeasuredTemplateDocument,
-        TTileDocument extends TileDocument = TileDocument,
-        TTokenDocument extends TokenDocument = TokenDocument,
-        TScene extends Scene = Scene,
-        TUser extends User = User,
-        TEffectsCanvasGroup extends EffectsCanvasGroup = EffectsCanvasGroup
+        TAmbientLightDocument extends AmbientLightDocument<TScene | null>,
+        TActiveEffect extends ActiveEffect<TActor | TItem | null>,
+        TActor extends Actor<TTokenDocument | null>,
+        TActorDelta extends ActorDelta<TTokenDocument | null>,
+        TChatLog extends ChatLog,
+        TChatMessage extends ChatMessage,
+        TCombat extends Combat,
+        TCombatant extends Combatant<TCombat | null, TTokenDocument | null>,
+        TCombatTracker extends CombatTracker<TCombat | null>,
+        TCompendiumDirectory extends CompendiumDirectory,
+        THotbar extends Hotbar,
+        TItem extends Item<TActor | null>,
+        TMacro extends Macro,
+        TMeasuredTemplateDocument extends MeasuredTemplateDocument<TScene | null>,
+        TTileDocument extends TileDocument<TScene | null>,
+        TTokenDocument extends TokenDocument<TScene | null>,
+        TWallDocument extends WallDocument<TScene | null>,
+        TScene extends Scene,
+        TUser extends User<Actor<null>>,
+        TEffectsCanvasGroup extends EffectsCanvasGroup,
     > {
         /** Configure debugging flags to display additional information */
         debug: {
@@ -35,16 +37,18 @@ declare global {
             time: boolean;
         };
 
-        /* -------------------------------------------- */
-        /*  Embedded Documents                          */
-        /* -------------------------------------------- */
+        /** Configure the DatabaseBackend used to perform Document operations */
+        DatabaseBackend: ClientDatabaseBackend;
 
         /** Configuration for the Actor document */
         Actor: {
             documentClass: {
-                new (data: PreCreate<TActor["_source"]>, context?: DocumentConstructionContext<TActor>): TActor;
+                new (
+                    data: PreCreate<TActor["_source"]>,
+                    context?: DocumentConstructionContext<TActor["parent"]>,
+                ): TActor;
             };
-            collection: ConstructorOf<Actors<TActor>>;
+            collection: ConstructorOf<Actors<Actor<null>>>;
             sheetClasses: Record<
                 string,
                 Record<
@@ -53,9 +57,13 @@ declare global {
                         id: string;
                         cls: typeof ActorSheet;
                         default: boolean;
+                        label: string;
+                        canConfigure: boolean;
+                        canBeDefault: boolean;
                     }
                 >
             >;
+            typeIcons: Record<string, string>;
             typeLabels: Record<string, string | undefined>;
         };
 
@@ -86,7 +94,7 @@ declare global {
             documentClass: {
                 new (
                     data: PreCreate<TChatMessage["_source"]>,
-                    context?: DocumentConstructionContext<TChatMessage>
+                    context?: DocumentConstructionContext<null>,
                 ): TChatMessage;
             };
             sidebarIcon: string;
@@ -96,7 +104,7 @@ declare global {
         /** Configuration for Item document */
         Item: {
             documentClass: {
-                new (data: PreCreate<TItem["_source"]>, context?: DocumentConstructionContext<TItem>): TItem;
+                new (data: PreCreate<TItem["_source"]>, context?: DocumentConstructionContext<TItem["parent"]>): TItem;
             };
             collection: typeof Items;
             sheetClasses: Record<
@@ -107,16 +115,20 @@ declare global {
                         id: string;
                         cls: typeof ItemSheet;
                         default: boolean;
+                        label: string;
+                        canConfigure: boolean;
+                        canBeDefault: boolean;
                     }
                 >
             >;
+            typeIcons: Record<string, string>;
             typeLabels: Record<string, string | undefined>;
         };
 
         /** Configuration for the Combat document */
         Combat: {
             documentClass: {
-                new (data: PreCreate<TCombat["_source"]>, context?: DocumentConstructionContext<TCombat>): TCombat;
+                new (data: PreCreate<TCombat["_source"]>, context?: DocumentConstructionContext<null>): TCombat;
             };
             collection: typeof CombatEncounters;
             defeatedStatusId: string;
@@ -134,6 +146,20 @@ declare global {
                 Anchor: string;
                 [key: string]: string;
             };
+            sheetClasses: Record<
+                string,
+                Record<
+                    string,
+                    {
+                        id: string;
+                        cls: typeof JournalSheet;
+                        default: boolean;
+                        label: string;
+                        canConfigure: boolean;
+                        canBeDefault: boolean;
+                    }
+                >
+            >;
             sidebarIcon: string;
         };
 
@@ -178,8 +204,8 @@ declare global {
         /** Configuration for the AmbientLight embedded document type and its representation on the game Canvas */
         AmbientLight: {
             documentClass: ConstructorOf<TAmbientLightDocument>;
-            objectClass: ConstructorOf<TAmbientLightDocument["object"]>;
-            layerClass: ConstructorOf<TAmbientLightDocument["object"]["layer"]>;
+            objectClass: ConstructorOf<NonNullable<TAmbientLightDocument["object"]>>;
+            layerClass: ConstructorOf<NonNullable<TAmbientLightDocument["object"]>["layer"]>;
         };
 
         /** Configuration for the ActiveEffect embedded document type */
@@ -187,16 +213,21 @@ declare global {
             documentClass: {
                 new (
                     data: PreCreate<TActiveEffect["_source"]>,
-                    context?: DocumentConstructionContext<TActiveEffect>
+                    context?: DocumentConstructionContext<TActiveEffect["parent"]>,
                 ): TActiveEffect;
             };
+        };
+
+        /** Configuration for the ActorDelta embedded document type. */
+        ActorDelta: {
+            documentClass: ConstructorOf<TActorDelta>;
         };
 
         /** Configuration for the Combatant document */
         Combatant: {
             documentClass: new (
                 data: PreCreate<TCombatant["_source"]>,
-                context?: DocumentConstructionContext<TCombatant>
+                context?: DocumentConstructionContext<TCombatant["parent"]>,
             ) => TCombatant;
         };
 
@@ -212,27 +243,31 @@ declare global {
                 rect: string;
                 ray: string;
             };
-            documentClass: new (
-                data: PreCreate<foundry.data.MeasuredTemplateSource>,
-                context?: DocumentConstructionContext<TMeasuredTemplateDocument>
-            ) => TMeasuredTemplateDocument;
-            objectClass: ConstructorOf<TMeasuredTemplateDocument["object"]>;
-            layerClass: ConstructorOf<TMeasuredTemplateDocument["object"]["layer"]>;
+            documentClass: ConstructorOf<TMeasuredTemplateDocument>;
+            objectClass: ConstructorOf<NonNullable<TMeasuredTemplateDocument["object"]>>;
+            layerClass: ConstructorOf<NonNullable<TMeasuredTemplateDocument["object"]>["layer"]>;
         };
 
         /** Configuration for the Tile embedded document type and its representation on the game Canvas */
         Tile: {
             documentClass: ConstructorOf<TTileDocument>;
-            objectClass: ConstructorOf<TTileDocument["object"]>;
-            layerClass: ConstructorOf<BackgroundLayer>;
+            objectClass: ConstructorOf<NonNullable<TTileDocument["object"]>>;
+            layerClass: ConstructorOf<TilesLayer<NonNullable<TTileDocument["object"]>>>;
         };
 
         /** Configuration for the Token embedded document type and its representation on the game Canvas */
         Token: {
             documentClass: ConstructorOf<TTokenDocument>;
-            objectClass: ConstructorOf<TTokenDocument["object"]>;
-            layerClass: ConstructorOf<TTokenDocument["object"]["layer"]>;
+            objectClass: ConstructorOf<NonNullable<TTokenDocument["object"]>>;
+            layerClass: ConstructorOf<NonNullable<TTokenDocument["object"]>["layer"]>;
             prototypeSheetClass: ConstructorOf<TTokenDocument["sheet"]>;
+        };
+
+        /** Configuration for the Wall embedded document type and its representation on the game Canvas */
+        Wall: {
+            documentClass: ConstructorOf<TWallDocument>;
+            objectClass: ConstructorOf<Wall<TWallDocument>>;
+            layerClass: ConstructorOf<NonNullable<TWallDocument["object"]>["layer"]>;
         };
 
         /* -------------------------------------------- */
@@ -245,6 +280,7 @@ declare global {
             darknessColor: number;
             darknessLightPenalty: number;
             daylightColor: number;
+            dragSpeedModifier: number;
             dispositionColors: {
                 HOSTILE: number;
                 NEUTRAL: number;
@@ -252,6 +288,7 @@ declare global {
                 INACTIVE: number;
                 PARTY: number;
                 CONTROLLED: number;
+                SECRET: number;
             };
             exploredColor: number;
             unexploredColor: number;
@@ -282,10 +319,6 @@ declare global {
                 };
             };
             layers: {
-                background: {
-                    group: "primary";
-                    layerClass: typeof BackgroundLayer;
-                };
                 drawings: {
                     group: "primary";
                     layerClass: typeof DrawingsLayer;
@@ -296,11 +329,11 @@ declare global {
                 };
                 walls: {
                     group: "effects";
-                    layerClass: typeof WallsLayer;
+                    layerClass: ConstructorOf<NonNullable<TWallDocument["object"]>["layer"]>;
                 };
                 templates: {
                     group: "primary";
-                    layerClass: ConstructorOf<TMeasuredTemplateDocument["object"]["layer"]>;
+                    layerClass: ConstructorOf<NonNullable<TMeasuredTemplateDocument["object"]>["layer"]>;
                 };
                 notes: {
                     group: "interface";
@@ -308,11 +341,11 @@ declare global {
                 };
                 tokens: {
                     group: "primary";
-                    layerClass: ConstructorOf<TTokenDocument["object"]["layer"]>;
+                    layerClass: ConstructorOf<NonNullable<TTokenDocument["object"]>["layer"]>;
                 };
-                foreground: {
+                tiles: {
                     group: "primary";
-                    layerClass: typeof ForegroundLayer;
+                    layerClass: typeof TilesLayer;
                 };
                 sounds: {
                     group: "interface";
@@ -320,7 +353,7 @@ declare global {
                 };
                 lighting: {
                     group: "effects";
-                    layerClass: ConstructorOf<TAmbientLightDocument["object"]["layer"]>;
+                    layerClass: ConstructorOf<NonNullable<TAmbientLightDocument["object"]>["layer"]>;
                 };
                 controls: {
                     group: "interface";
@@ -329,9 +362,18 @@ declare global {
             };
             lightLevels: {
                 dark: number;
+                halfdark: number;
                 dim: number;
                 bright: number;
             };
+
+            polygonBackends: {
+                sight: typeof ClockwiseSweepPolygon;
+                light: typeof ClockwiseSweepPolygon;
+                sound: typeof ClockwiseSweepPolygon;
+                move: typeof ClockwiseSweepPolygon;
+            };
+
             normalLightColor: number;
             maxZoom: number;
             objectBorderThickness: number;
@@ -439,9 +481,7 @@ declare global {
                 feelTremor: DetectionModeTremor;
                 seeAll: DetectionModeAll;
                 senseAll: DetectionModeAll;
-            } & {
-                [K in string]?: DetectionMode;
-            };
+            } & Record<string, DetectionMode | undefined>;
         };
 
         /** Configure the default Token text style so that it may be reused and overridden by modules */
@@ -455,29 +495,24 @@ declare global {
             types: (typeof Die | typeof DiceTerm)[];
             rollModes: Record<RollMode, string>;
             rolls: ConstructorOf<Roll>[];
-            termTypes: Record<string, ConstructorOf<RollTerm>>;
+            termTypes: Record<string, ConstructorOf<RollTerm> & { fromData(data: object): RollTerm }>;
             terms: {
                 c: typeof Coin;
                 d: typeof Die;
                 f: typeof FateDie;
+                [key: string]: ConstructorOf<DiceTerm>;
             };
             randomUniform: Function;
         };
 
         /** The control icons used for rendering common HUD operations */
-        controlIcons: {
-            combat: string;
-            visibility: string;
-            effects: string;
-            lock: string;
-            up: string;
-            down: string;
-            defeated: string;
-            [key: string]: string | undefined;
-        };
+        controlIcons: ControlIconsConfig;
 
-        /** Suggested font families that are displayed wherever a choice is presented */
-        fontFamilies: string[];
+        /** A collection of fonts to load either from the user's local system, or remotely. */
+        fontDefinitions: Record<string, FontFamilyDefinition>;
+
+        /** deprecated since v10. */
+        _fontFamilies: string[];
 
         /** The default font family used for text labels on the PIXI Canvas */
         defaultFontFamily: string;
@@ -495,7 +530,7 @@ declare global {
 
         /** A mapping of core audio effects used which can be replaced by systems or mods */
         sounds: {
-            dice: AudioPath;
+            dice: AudioFilePath;
             lock: string;
             notification: string;
             combat: string;
@@ -514,7 +549,7 @@ declare global {
         TextEditor: {
             enrichers: {
                 pattern: RegExp;
-                enricher: (match: RegExpMatchArray, options: EnrichHTMLOptions) => Promise<HTMLElement | null>;
+                enricher: (match: RegExpMatchArray, options: EnrichmentOptions) => Promise<HTMLElement | null>;
             }[];
         };
 
@@ -529,13 +564,13 @@ declare global {
         };
 
         ui: {
-            actors: typeof ActorDirectory;
+            actors: ConstructorOf<ActorDirectory<Actor<null>>>;
             chat: ConstructorOf<TChatLog>;
             combat: ConstructorOf<TCombatTracker>;
             compendium: ConstructorOf<TCompendiumDirectory>;
             controls: typeof SceneControls;
             hotbar: ConstructorOf<THotbar>;
-            items: typeof ItemDirectory;
+            items: ConstructorOf<ItemDirectory<Item<null>>>;
             // journal: typeof JournalDirectory;
             // macros: typeof MacroDirectory;
             menu: typeof MainMenu;
@@ -552,9 +587,34 @@ declare global {
         };
     }
 
+    interface ControlIconsConfig {
+        combat: ImageFilePath | VideoFilePath;
+        visibility: ImageFilePath | VideoFilePath;
+        effects: ImageFilePath | VideoFilePath;
+        lock: ImageFilePath | VideoFilePath;
+        up: ImageFilePath | VideoFilePath;
+        down: ImageFilePath | VideoFilePath;
+        defeated: ImageFilePath | VideoFilePath;
+        [key: string]: ImageFilePath | VideoFilePath | undefined;
+    }
+
     interface StatusEffect {
         id: string;
         label: string;
-        icon: ImagePath | VideoPath;
+        icon: ImageFilePath | VideoFilePath;
+    }
+
+    interface FontFamilyDefinition {
+        /** Whether the font is available in the rich text editor. This will also enable it for notes and drawings. */
+        editor: boolean;
+        fonts: FontDefinition[];
+    }
+
+    interface FontDefinition extends FontFaceDescriptors {
+        /**
+         * Individual font face definitions for this font family. If this is empty, the font family may only be loaded
+         * from the client's OS-installed fonts.
+         */
+        urls: string[];
     }
 }

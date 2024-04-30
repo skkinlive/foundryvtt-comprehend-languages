@@ -43,7 +43,7 @@ declare global {
          * Get the Array of Macro (or null) values that should be displayed on a numbered page of the bar
          * @param page
          */
-        protected _getMacrosByPage(page: number): Macro[];
+        protected _getMacrosByPage(page: number): TMacro[];
 
         /**
          * Collapse the Hotbar, minimizing its display.
@@ -97,18 +97,18 @@ declare global {
 
         protected override _canDragStart(selector: string): boolean;
 
-        protected override _onDragStart(event: ElementDragEvent): void;
+        protected override _onDragStart(event: DragEvent): void;
 
         protected override _canDragDrop(selector: string): boolean;
 
-        protected override _onDrop(event: ElementDragEvent): Promise<void>;
+        protected override _onDrop(event: DragEvent): Promise<void>;
 
         /**
          * Get the Macro entity being dropped in the Hotbar. If the data comes from a non-World source, create the Macro
          * @param data The data transfer attached to the DragEvent
          * @return A Promise which returns the dropped Macro, or null
          */
-        protected _getDropMacro(data: unknown): Promise<Macro | null>;
+        protected _getDropMacro(data: unknown): Promise<TMacro | null>;
 
         /**
          * Handle click events to toggle display of the macro bar

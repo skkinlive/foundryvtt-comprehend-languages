@@ -12,7 +12,7 @@ declare global {
         walls: boolean;
         type: DetectionType;
 
-        constructor(params: DetectionModeConstructionParams, context?: DocumentConstructionContext);
+        constructor(params: DetectionModeConstructionParams, context?: DocumentConstructionContext<null>);
 
         /** Get the detection filter pertaining to this mode. */
         static getDetectionFilter(): PIXI.Filter | undefined;
@@ -49,7 +49,7 @@ declare global {
         testVisibility(
             visionSource: VisionSource<Token>,
             mode: TokenDetectionMode,
-            config?: CanvasVisibilityTestConfig
+            config?: CanvasVisibilityTestConfig,
         ): boolean;
 
         /**
@@ -73,7 +73,7 @@ declare global {
             visionSource: VisionSource<Token>,
             mode: TokenDetectionMode,
             target: PlaceableObject,
-            test: CanvasVisibilityTest
+            test: CanvasVisibilityTest,
         ): boolean;
 
         /**
@@ -90,7 +90,7 @@ declare global {
             visionSource: VisionSource<Token>,
             mode: TokenDetectionMode,
             target: PlaceableObject,
-            test: CanvasVisibilityTest
+            test: CanvasVisibilityTest,
         ): boolean;
 
         /**
@@ -105,7 +105,7 @@ declare global {
             visionSource: VisionSource<Token>,
             mode: TokenDetectionMode,
             target: PlaceableObject,
-            test: CanvasVisibilityTest
+            test: CanvasVisibilityTest,
         ): boolean;
     }
 
@@ -121,7 +121,7 @@ declare global {
             visionSource: VisionSource<Token>,
             mode: TokenDetectionMode,
             target: PlaceableObject,
-            test: CanvasVisibilityTest
+            test: CanvasVisibilityTest,
         ): boolean;
     }
 
@@ -141,7 +141,7 @@ declare global {
      * Detection mode that see creatures in contact with the ground.
      */
     class DetectionModeTremor extends DetectionMode {
-        static override getDetectionFilter(): PIXI.Filter;
+        static override getDetectionFilter(): OutlineOverlayFilter;
 
         protected override _canDetect(visionSource: VisionSource<Token>, target: PlaceableObject): boolean;
     }
@@ -162,10 +162,10 @@ declare global {
         /** Whether or not this detection mode is presently enabled */
         enabled: boolean;
         /** The maximum range in distance units at which this mode can detect targets */
-        range: number | null;
+        range: number;
     }
 
-    type DetectionType = typeof DetectionMode.DETECTION_TYPES[keyof typeof DetectionMode.DETECTION_TYPES];
+    type DetectionType = (typeof DetectionMode.DETECTION_TYPES)[keyof typeof DetectionMode.DETECTION_TYPES];
 }
 
 interface DetectionModeConstructionParams {
