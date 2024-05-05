@@ -1,5 +1,5 @@
+import { SelectionTranslator } from "./SelectionTranslator.js";
 import CONSTANTS from "./constants.js";
-import { RarityColorsApp } from "./apps/rarity-colors-app.js";
 import Logger from "./lib/Logger.js";
 export const registerSettings = function () {
     game.settings.registerMenu(CONSTANTS.MODULE_ID, "resetAllSettings", {
@@ -10,7 +10,7 @@ export const registerSettings = function () {
         restricted: true,
     });
 
-    game.settings.register(ComprehendLanguagesStatic.ID, ComprehendLanguagesStatic.SETTINGS.DEEPL_TOKEN, {
+    game.settings.register(CONSTANTS.ID, CONSTANTS.SETTINGS.DEEPL_TOKEN, {
         name: "DeepL Token",
         config: true,
         hint: "Insert your DeepL Token here",
@@ -19,7 +19,7 @@ export const registerSettings = function () {
         scope: "world",
     });
 
-    game.settings.register(ComprehendLanguagesStatic.ID, ComprehendLanguagesStatic.SETTINGS.TARGET_LANG, {
+    game.settings.register(CONSTANTS.ID, CONSTANTS.SETTINGS.TARGET_LANG, {
         name: "Target Language",
         config: true,
         hint: "What should your target language be",
@@ -54,7 +54,7 @@ export const registerSettings = function () {
         scope: "world",
     });
 
-    game.settings.register(ComprehendLanguagesStatic.ID, ComprehendLanguagesStatic.SETTINGS.FORMALITY, {
+    game.settings.register(CONSTANTS.ID, CONSTANTS.SETTINGS.FORMALITY, {
         name: "Formality",
         config: true,
         hint: "How formal should the translations be (if the language supports it)",
@@ -66,7 +66,7 @@ export const registerSettings = function () {
         },
         scope: "world",
     });
-    game.settings.register(ComprehendLanguagesStatic.ID, ComprehendLanguagesStatic.SETTINGS.ICON_ONLY, {
+    game.settings.register(CONSTANTS.ID, CONSTANTS.SETTINGS.ICON_ONLY, {
         name: "Icon Only",
         config: true,
         hint: "If enabled the header button will show with only the icon and no text",
@@ -74,7 +74,7 @@ export const registerSettings = function () {
         default: false,
         scope: "world",
     });
-    game.settings.register(ComprehendLanguagesStatic.ID, ComprehendLanguagesStatic.SETTINGS.IN_PLACE, {
+    game.settings.register(CONSTANTS.ID, CONSTANTS.SETTINGS.IN_PLACE, {
         name: "Translate In Place (Overwriting the original)",
         config: true,
         hint: "If enabled the original document will be overwritten with the translated text. The following three settings will be ignored if this is enabled.",
@@ -82,7 +82,7 @@ export const registerSettings = function () {
         default: false,
         scope: "world",
     });
-    game.settings.register(ComprehendLanguagesStatic.ID, ComprehendLanguagesStatic.SETTINGS.SEPARATE_FOLDER, {
+    game.settings.register(CONSTANTS.ID, CONSTANTS.SETTINGS.SEPARATE_FOLDER, {
         name: "Separate Folder",
         config: true,
         hint: "If enabled the translated documents & items will be put into a separate folder.",
@@ -91,7 +91,7 @@ export const registerSettings = function () {
         scope: "world",
     });
 
-    game.settings.register(ComprehendLanguagesStatic.ID, ComprehendLanguagesStatic.SETTINGS.TRANSLATE_FOLDER_NAME, {
+    game.settings.register(CONSTANTS.ID, CONSTANTS.SETTINGS.TRANSLATE_FOLDER_NAME, {
         name: "Translate Folder Name",
         config: true,
         hint: "If enabled together with the *Separate Folder* setting, the name of the folder will be translated as well.",
@@ -100,7 +100,7 @@ export const registerSettings = function () {
         scope: "world",
     });
 
-    game.settings.register(ComprehendLanguagesStatic.ID, ComprehendLanguagesStatic.SETTINGS.TRANSLATE_JOURNAL_NAME, {
+    game.settings.register(CONSTANTS.ID, CONSTANTS.SETTINGS.TRANSLATE_JOURNAL_NAME, {
         name: "Translate Document Names",
         config: true,
         hint: "If enabled the names of Journals, Journal Pages and Items will be translated as well and the language prefix omitted.",
@@ -123,7 +123,7 @@ export const registerSettings = function () {
     // Keybindings
     // ==============================================
 
-    game.keybindings.register(ComprehendLanguagesStatic.ID, "translate-highlighted-text", {
+    game.keybindings.register(CONSTANTS.ID, "translate-highlighted-text", {
         name: "Translate highlighted text",
         hint: "Translate the currently selected piece of text and pop it out into a Dialog",
         editable: [{ key: "KeyT", modifiers: ["Alt"] }],

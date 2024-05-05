@@ -1,11 +1,7 @@
-export class ComprehendLanguagesStatic {
-    static ID = "comprehend-languages";
-
-    static FLAGS = {
-        COMPREHENDLANGUAGES: "COMPREHENDLANGUAGES",
-    };
-
-    static SETTINGS = {
+const CONSTANTS = {
+    MODULE_ID: "comprehend-languages",
+    PATH: `modules/comprehend-languages/`,
+    SETTINGS: {
         DEEPL_TOKEN: "deepl-token",
         TARGET_LANG: "target-language",
         SUBSETTINGS_MENU: "subsetting-menu",
@@ -15,5 +11,9 @@ export class ComprehendLanguagesStatic {
         TRANSLATE_JOURNAL_NAME: "translate-journal-name",
         IN_PLACE: "in-place",
         FORMALITY: "formality",
-    };
-}
+    },
+    FLAGS: {
+        COMPREHENDLANGUAGES: "COMPREHENDLANGUAGES",
+    },
+};
+export default CONSTANTS;

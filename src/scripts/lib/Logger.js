@@ -1,4 +1,4 @@
-import { CONSTANTS } from "../constants/constants";
+import CONSTANTS from "../constants";
 
 // ================================
 // Logger utility
