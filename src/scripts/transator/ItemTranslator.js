@@ -11,6 +11,9 @@ import {
     translate_text,
     determineNewName,
 } from "./lib";
+import { parseAsArray } from "../lib";
+import SETTINGS from "../constants/settings";
+import Logger from "../lib/Logger";
 
 export class ItemTranslator extends Translator {
     /**
@@ -23,17 +26,37 @@ export class ItemTranslator extends Translator {
         if (!token) {
             dialogTokenMissing();
         } else {
-            // TODO Not every system has the "description" property on system item
-
-            if (documentToTranslate.system.description) {
-                if (!translateInPlace) {
-                    await this.translateAndCreateItem(documentToTranslate, token, target_lang, makeSeparateFolder);
-                } else {
-                    await this.translateAndReplaceOriginal(documentToTranslate, token, target_lang);
+            // Not every system has the "description" property on system item
+            const fieldsToTranslate = parseAsArray(SETTINGS.ITEM_DESCRIPTION_PROPERTY);
+            if (fieldsToTranslate?.length > 0) {
+                for (const fieldToTranslate of fieldsToTranslate) {
+                    const textToTranslate = foundry.utils.getProperty(documentToTranslate, fieldToTranslate);
+                    if (textToTranslate) {
+                        if (!translateInPlace) {
+                            Logger.debug(
+                                `Translate not in place on the item ${documentToTranslate.name} field ${fieldToTranslate}`,
+                            );
+                            await this.translateAndCreateItem(
+                                documentToTranslate,
+                                token,
+                                target_lang,
+                                makeSeparateFolder,
+                            );
+                        } else {
+                            Logger.debug(
+                                `Translate in place on the item ${documentToTranslate.name} field ${fieldToTranslate}`,
+                            );
+                            await this.translateAndReplaceOriginal(documentToTranslate, token, target_lang);
+                        }
+                    } else {
+                        // DO NOTHING
+                        Logger.warn(
+                            `Nothing to translate on the item ${documentToTranslate.name} field ${fieldToTranslate}`,
+                        );
+                    }
                 }
             } else {
-                // DO NOTHING
-                console.warn(`Nothing to translate on the item ${documentToTranslate.name}`);
+                Logger.warn(`Nothing to translate on the item ${documentToTranslate.name}`);
             }
         }
     }

@@ -1,5 +1,4 @@
 import { ComprehendLanguagesTranslator } from "./ComprehendLanguagesTranslator";
-import { ComprehendLanguages } from "./ComprehendLanguages";
 import { CONSTANTS } from "./constants";
 
 export const addTranslateButton = async function (app) {
@@ -278,4 +277,27 @@ export async function determineNewName(documentToTranslate) {
         newName = target_lang + "_" + documentToTranslate.name;
     }
     return newName;
+}
+
+/**
+ * Parses the given object as an array.
+ * If the object is a string, it splits it by commas and returns an array.
+ * If the object is already an array, it returns the same array.
+ * If the object is neither a string nor an array, it wraps it in an array and returns it.
+ * @param {string|Array|any} obj - The object to be parsed as an array.
+ * @returns {Array} - The parsed array.
+ */
+export function parseAsArray(obj) {
+    if (!obj) {
+        return [];
+    }
+    let arr = [];
+    if (typeof obj === "string" || obj instanceof String) {
+        arr = obj.split(",");
+    } else if (obj.constructor === Array) {
+        arr = obj;
+    } else {
+        arr = [obj];
+    }
+    return arr;
 }
