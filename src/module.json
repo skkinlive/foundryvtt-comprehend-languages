@@ -1,10 +1,9 @@
 {
   "id": "comprehend-languages",
   "title": "Comprehend Languages",
-  "description": "",
-  "version": "2.2.3",
+  "description": "Comprehend languages leverages the Deepl API to automatically translate Foundry Journal Entries & (some) item descriptions from English into a language of your choice. In the process, a new journal entry is created that contains the translated text.",
+  "version": "2.3.0",
   "library": "false",
-  "manifestPlusVersion": "1.0.0",
   "compatibility":{
     "minimum": "11",
     "verified": "11.302"
