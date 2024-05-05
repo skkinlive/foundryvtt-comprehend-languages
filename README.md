@@ -9,15 +9,15 @@ Comprehend languages leverages the Deepl API to automatically translate Foundry 
 A bit of setup work is required before the module functions. You need to create a DeepL API Free account at [Deepl.com](https://www.deepl.com/pro#developer). The Free account should give you way more translated characters than you should need (500.000 characters/month). Unfortunately, a credit card (that will not be charged unless you upgrade to a Pro account) is required for the account creation process.
 After setting up your account, go into your DeepL account settings and copy the "Authentication Key for DeepL API".
 
-![DeepL Token](img/deepl-token-copy.png)
+![DeepL Token](wiki/img/deepl-token-copy.png)
 
 After enabling the module in your world, open the Module Settings and paste the API Key into the **DeepL Token** input field. Here you can also set your preferred target language.
 
-![Module Settings](img/settings.png)
+![Module Settings](wiki/img/settings.png)
 
 Now you are good to go. When opening a Journal Entry or Item, a new button appears in the header only for the GM (**Translate**). Click on that button and after a few seconds (depending on the length of the text) a new JournalEntry or Item will be created which is called _xx_OldName_. XX is a two letter abbreviation for your target language. Optionally you can also enable a setting that saves all translated entries into their own folder.
 
-![Example Translation](img/example-translation.png)
+![Example Translation](wiki/img/example-translation.png)
 
 The module retains HTML formatting.
 
@@ -127,12 +127,6 @@ Any issues, bugs, or feature requests are always welcome to be reported directly
 
 ## Licenses
 
-This package is under an [GPL-3.0 license](LICENSE) and the [Foundry Virtual Tabletop Limited License Agreement for module development](https://foundryvtt.com/article/license/).
+This package is under an [MIT](LICENSE) and the [Foundry Virtual Tabletop Limited License Agreement for module development](https://foundryvtt.com/article/license/).
 
 ## Credit
-
-Thanks to anyone who helps me with this code! I appreciate the user community's feedback on this project!
-
-* [data-toolbox](https://foundryvtt.com/packages/data-toolbox) For providing an easy method for importing items programmatically from a csv to a compendium
-* [p4535992](https://github.com/p4535992) For adding Compatibility with Better Roll Tables, Requestor & Ongoing Support/Development
-* [ctbritt](https://github.com/ctbritt) For adding Item Piles integration

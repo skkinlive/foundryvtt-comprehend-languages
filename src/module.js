@@ -1,5 +1,4 @@
 import { registerSettings } from "./scripts/settings.js";
-import { initHooks, readyHooks, setupHooks } from "./scripts/raritycolors.js";
 import CONSTANTS from "./scripts/constants.js";
 import Logger from "./scripts/lib/Logger.js";
 
@@ -14,16 +13,10 @@ Hooks.once("init", () => {
     //         word = "activate";
     //     throw Logger.error(`Requires the 'libWrapper' module. Please ${word} it.`);
     // }
-    if (!game.modules.get("colorsettings")?.active && game.user?.isGM) {
-        let word = "install and activate";
-        if (game.modules.get("colorsettings")) word = "activate";
-        throw Logger.error(`Requires the 'colorsettings' module. Please ${word} it.`);
-    }
     // Register custom module settings
     registerSettings();
 
-    initHooks();
-    // readyHooks();
+    // initHooks();
     // Assign custom classes and constants here
     // Register custom module settings
     // registerSettings();
@@ -38,8 +31,7 @@ Hooks.once("init", () => {
 Hooks.once("setup", () => {
     // Do anything after initialization but before ready
     // setupModules();
-    setupHooks();
-    // registerSettings();
+    // setupHooks();
 });
 /* ------------------------------------ */
 /* When ready */
@@ -52,7 +44,7 @@ Hooks.once("ready", () => {
     // }
     // Do anything once the module is ready
     // prepareConfigurations();
-    readyHooks();
+    // readyHooks();
 });
 
 /* ------------------------------------ */
