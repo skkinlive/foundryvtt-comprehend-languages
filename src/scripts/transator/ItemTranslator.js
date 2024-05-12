@@ -13,6 +13,7 @@ import {
 } from "../lib";
 import SETTINGS from "../constants/settings";
 import Logger from "../lib/Logger";
+import CONSTANTS from "../constants";
 
 export class ItemTranslator extends Translator {
     /**
@@ -25,37 +26,10 @@ export class ItemTranslator extends Translator {
         if (!token) {
             dialogTokenMissing();
         } else {
-            // Not every system has the "description" property on system item
-            const fieldsToTranslate = parseAsArray(SETTINGS.ITEM_DESCRIPTION_PROPERTY);
-            if (fieldsToTranslate?.length > 0) {
-                for (const fieldToTranslate of fieldsToTranslate) {
-                    const textToTranslate = foundry.utils.getProperty(documentToTranslate, fieldToTranslate);
-                    if (textToTranslate) {
-                        if (!translateInPlace) {
-                            Logger.debug(
-                                `Translate not in place on the item ${documentToTranslate.name} field ${fieldToTranslate}`,
-                            );
-                            await this.translateAndCreateItem(
-                                documentToTranslate,
-                                token,
-                                target_lang,
-                                makeSeparateFolder,
-                            );
-                        } else {
-                            Logger.debug(
-                                `Translate in place on the item ${documentToTranslate.name} field ${fieldToTranslate}`,
-                            );
-                            await this.translateAndReplaceOriginal(documentToTranslate, token, target_lang);
-                        }
-                    } else {
-                        // DO NOTHING
-                        Logger.warn(
-                            `Nothing to translate on the item ${documentToTranslate.name} field ${fieldToTranslate}`,
-                        );
-                    }
-                }
+            if (!translateInPlace) {
+                await this.translateAndCreateItem(documentToTranslate, token, target_lang, makeSeparateFolder);
             } else {
-                Logger.warn(`Nothing to translate on the item ${documentToTranslate.name}`);
+                await this.translateAndReplaceOriginal(documentToTranslate, token, target_lang);
             }
         }
     }
@@ -68,16 +42,53 @@ export class ItemTranslator extends Translator {
      * @returns {Promise<void>}
      */
     async translateAndReplaceOriginal(documentToTranslate, token, target_lang) {
-        const newDescriptionText = await translate_html(
-            documentToTranslate.system.description.value,
-            token,
-            target_lang,
-        ).catch((e) => {
-            new ErrorDialog(e.message);
-        });
-        documentToTranslate.update({
-            system: { description: { value: newDescriptionText } },
-        });
+        // Not every system has the "description" property on system item
+        const fieldsToTranslateValue = game.settings.get(CONSTANTS.MODULE_ID, SETTINGS.ITEM_DESCRIPTION_PROPERTY);
+        const fieldsToTranslate = parseAsArray(fieldsToTranslateValue);
+        if (fieldsToTranslate?.length > 0) {
+            let objExpanded = {};
+            for (const fieldToTranslate of fieldsToTranslate) {
+                Logger.debug(`Translate in place on the item ${documentToTranslate.name} field ${fieldToTranslate}`);
+                if (foundry.utils.hasProperty(documentToTranslate, fieldToTranslate)) {
+                    const textToTranslate = foundry.utils.getProperty(documentToTranslate, fieldToTranslate);
+                    if (textToTranslate) {
+                        const newDescriptionText = await translate_html(
+                            documentToTranslate.system.description.value,
+                            token,
+                            target_lang,
+                        ).catch((e) => {
+                            new ErrorDialog(e.message);
+                        });
+                        if (!newDescriptionText) {
+                            // DO NOTHING
+                            Logger.warn(
+                                `Nothing translated on the item ${documentToTranslate.name} field ${fieldToTranslate}`,
+                            );
+                        } else {
+                            const objFlat = {};
+                            foundry.utils.setProperty(objFlat, fieldToTranslate, newDescriptionText);
+                            foundry.utils.mergeObject(objExpanded, objFlat);
+                        }
+                    } else {
+                        // DO NOTHING
+                        Logger.warn(
+                            `Nothing to translate on the item ${documentToTranslate.name} field ${fieldToTranslate}`,
+                        );
+                    }
+                } else {
+                    // DO NOTHING
+                    Logger.warn(`No field ${fieldToTranslate} on the item ${documentToTranslate.name}`);
+                }
+            }
+
+            // documentToTranslate.update({
+            //     system: { description: { value: newDescriptionText } },
+            // });
+            objExpanded = foundry.utils.expandObject(objExpanded);
+            await documentToTranslate.update(objExpanded);
+        } else {
+            Logger.warn(`Nothing to translate on the item ${documentToTranslate.name}`);
+        }
     }
 
     /**
@@ -90,15 +101,6 @@ export class ItemTranslator extends Translator {
      */
     async translateAndCreateItem(documentToTranslate, token, target_lang, makeSeparateFolder) {
         let newName = await determineNewName(documentToTranslate);
-        const newDescriptionText = await translate_html(
-            documentToTranslate.system.description.value,
-            token,
-            target_lang,
-        ).catch((e) => {
-            new ErrorDialog(e.message);
-        });
-        if (!newDescriptionText) {
-        }
         const newFolder = await determineFolder(documentToTranslate, target_lang, makeSeparateFolder);
         const newItems = await Item.createDocuments([
             {
@@ -111,16 +113,52 @@ export class ItemTranslator extends Translator {
         if (!newItems || newItems.length <= 0) {
             //
         }
+        // Not every system has the "description" property on system item
+        const fieldsToTranslateValue = game.settings.get(CONSTANTS.MODULE_ID, SETTINGS.ITEM_DESCRIPTION_PROPERTY);
+        const fieldsToTranslate = parseAsArray(fieldsToTranslateValue);
+        if (fieldsToTranslate?.length > 0) {
+            let objExpanded = {};
+            for (const fieldToTranslate of fieldsToTranslate) {
+                Logger.debug(
+                    `Translate not in place on the item ${documentToTranslate.name} field ${fieldToTranslate}`,
+                );
+                if (foundry.utils.hasProperty(documentToTranslate, fieldToTranslate)) {
+                    const textToTranslate = foundry.utils.getProperty(documentToTranslate, fieldToTranslate);
+                    if (textToTranslate) {
+                        const newDescriptionText = await translate_html(textToTranslate, token, target_lang).catch(
+                            (e) => {
+                                new ErrorDialog(e.message);
+                            },
+                        );
+                        if (!newDescriptionText) {
+                            // DO NOTHING
+                            Logger.warn(
+                                `Nothing translated on the item ${documentToTranslate.name} field ${fieldToTranslate}`,
+                            );
+                        } else {
+                            const objFlat = {};
+                            foundry.utils.setProperty(objFlat, fieldToTranslate, newDescriptionText);
+                            foundry.utils.mergeObject(objExpanded, objFlat);
+                        }
+                    } else {
+                        // DO NOTHING
+                        Logger.warn(
+                            `Nothing to translate on the item ${documentToTranslate.name} field ${fieldToTranslate}`,
+                        );
+                    }
+                } else {
+                    // DO NOTHING
+                    Logger.warn(`No field ${fieldToTranslate} on the item ${documentToTranslate.name}`);
+                }
+            }
 
-        // await newItems[0].update({
-        //   system: {
-        //     description: {
-        //       value:
-        //     }newDescriptionText
-        //   }
-        // });
-        await newItems[0].update({
-            system: { description: { value: newDescriptionText } },
-        });
+            // await newItems[0].update({
+            //     system: { description: { value: newDescriptionText } },
+            // });
+            objExpanded = foundry.utils.expandObject(objExpanded);
+            await newItems[0].update(objExpanded);
+        } else {
+            Logger.warn(`Nothing to translate on the item ${documentToTranslate.name}`);
+        }
     }
 }

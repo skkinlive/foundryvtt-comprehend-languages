@@ -34,7 +34,7 @@ export const addTranslateButton = async function (app) {
             buttonText = "";
         }
         const link = $(
-            `<a id="${domID}" class="popout"><i class="fas fa-book" title="${game.i18n.localize(
+            `<a id="${domID}" class="popout"><i class="fas fa-language" data-tooltip="${game.i18n.localize(
                 "Translate",
             )}"></i>${buttonText}</a>`,
         );
