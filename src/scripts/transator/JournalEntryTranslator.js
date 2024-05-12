@@ -1,6 +1,5 @@
 import { Translator } from "./Translator";
-import { ComprehendLanguages } from "./ComprehendLanguages";
-import { ErrorDialog } from "./ErrorDialog";
+import { ErrorDialog } from "../ErrorDialog";
 import {
     _split_at_p,
     _split_html,
@@ -10,7 +9,7 @@ import {
     determineFolder,
     translate_text,
     determineNewName,
-} from "./lib";
+} from "../lib";
 
 export class JournalEntryTranslator extends Translator {
     /**

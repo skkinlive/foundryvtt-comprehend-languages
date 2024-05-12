@@ -1,5 +1,5 @@
 import { ComprehendLanguagesTranslator } from "./ComprehendLanguagesTranslator";
-import { CONSTANTS } from "./constants";
+import CONSTANTS from "./constants";
 
 export const addTranslateButton = async function (app) {
     if (!game.user.isGM) {
@@ -30,7 +30,7 @@ export const addTranslateButton = async function (app) {
         /* eslint-disable no-undef */
         // class "header-button" is for compatibility with 🦋 Monarch
         let buttonText = game.i18n.localize("Translate");
-        if (game && game.settings.get("comprehend-languages", "iconOnly")) {
+        if (game && game.settings.get(CONSTANTS.MODULE_ID, "iconOnly")) {
             buttonText = "";
         }
         const link = $(
@@ -142,7 +142,7 @@ export async function translate_html(long_html, token, target_lang) {
  * @returns {Promise<string>} Translated text
  */
 export async function translate_text(text, token, target_lang) {
-    const formality = await game.settings.get(CONSTANTS.ID, CONSTANTS.SETTINGS.FORMALITY);
+    const formality = await game.settings.get(CONSTANTS.MODULE_ID, CONSTANTS.SETTINGS.FORMALITY);
 
     let newText = text;
     newText = replaceAll(newText, `@Scene[`, `@UUID[Scene.`);
@@ -187,10 +187,10 @@ export function replaceAll(string, search, replace) {
  * @returns {Promise<{token: string;target_lang: string;makeSeparateFolder: boolean;translateInPlace: boolean;}>}
  */
 export async function getTranslationSettings() {
-    const token = game.settings.get(CONSTANTS.ID, CONSTANTS.SETTINGS.DEEPL_TOKEN);
-    const target_lang = game.settings.get(CONSTANTS.ID, CONSTANTS.SETTINGS.TARGET_LANG);
-    const makeSeparateFolder = game.settings.get(CONSTANTS.ID, CONSTANTS.SETTINGS.SEPARATE_FOLDER);
-    const translateInPlace = game.settings.get(CONSTANTS.ID, CONSTANTS.SETTINGS.IN_PLACE);
+    const token = game.settings.get(CONSTANTS.MODULE_ID, CONSTANTS.SETTINGS.DEEPL_TOKEN);
+    const target_lang = game.settings.get(CONSTANTS.MODULE_ID, CONSTANTS.SETTINGS.TARGET_LANG);
+    const makeSeparateFolder = game.settings.get(CONSTANTS.MODULE_ID, CONSTANTS.SETTINGS.SEPARATE_FOLDER);
+    const translateInPlace = game.settings.get(CONSTANTS.MODULE_ID, CONSTANTS.SETTINGS.IN_PLACE);
 
     return {
         token: token,
@@ -230,11 +230,11 @@ export async function determineFolder(translatable, target_lang, makeSeparateFol
         }
         let oldFolderName = translatable.folder.name;
         var newFolderName = "";
-        if (game.settings.get(CONSTANTS.ID, CONSTANTS.SETTINGS.TRANSLATE_FOLDER_NAME)) {
+        if (game.settings.get(CONSTANTS.MODULE_ID, CONSTANTS.SETTINGS.TRANSLATE_FOLDER_NAME)) {
             newFolderName = await translate_text(
                 oldFolderName,
-                game.settings.get(CONSTANTS.ID, CONSTANTS.SETTINGS.DEEPL_TOKEN),
-                game.settings.get(CONSTANTS.ID, CONSTANTS.SETTINGS.TARGET_LANG),
+                game.settings.get(CONSTANTS.MODULE_ID, CONSTANTS.SETTINGS.DEEPL_TOKEN),
+                game.settings.get(CONSTANTS.MODULE_ID, CONSTANTS.SETTINGS.TARGET_LANG),
             );
         } else {
             newFolderName = target_lang + "_" + oldFolderName;
@@ -268,7 +268,7 @@ export async function determineFolder(translatable, target_lang, makeSeparateFol
 export async function determineNewName(documentToTranslate) {
     const { token, target_lang, makeSeparateFolder } = await getTranslationSettings();
     let newName = "";
-    if (game.settings.get(CONSTANTS.ID, CONSTANTS.SETTINGS.TRANSLATE_JOURNAL_NAME)) {
+    if (game.settings.get(CONSTANTS.MODULE_ID, CONSTANTS.SETTINGS.TRANSLATE_JOURNAL_NAME)) {
         newName = await translate_text(documentToTranslate.name, token, target_lang);
     } else {
         if (documentToTranslate instanceof JournalEntryPage) {

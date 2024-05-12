@@ -1,6 +1,5 @@
 import { Translator } from "./Translator";
-import { ComprehendLanguages } from "./ComprehendLanguages";
-import { ErrorDialog } from "./ErrorDialog";
+import { ErrorDialog } from "../ErrorDialog";
 import {
     _split_at_p,
     _split_html,
@@ -10,8 +9,8 @@ import {
     determineFolder,
     translate_text,
     determineNewName,
-} from "./lib";
-import { parseAsArray } from "../lib";
+    parseAsArray,
+} from "../lib";
 import SETTINGS from "../constants/settings";
 import Logger from "../lib/Logger";
 

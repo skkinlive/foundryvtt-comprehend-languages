@@ -1,4 +1,3 @@
-import { ComprehendLanguages } from "./ComprehendLanguages";
 import { ErrorDialog } from "./ErrorDialog";
 import {
     _split_at_p,
@@ -10,6 +9,8 @@ import {
     translate_text,
     determineNewName,
 } from "./lib";
+import { ItemTranslator } from "./transator/ItemTranslator";
+import { JournalEntryTranslator } from "./transator/JournalEntryTranslator";
 
 export class ComprehendLanguagesTranslator {
     /**
