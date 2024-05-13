@@ -4,9 +4,9 @@ export class SelectionTranslator {
      * @returns {Promise<void>}
      */
     static async translateSelectedText() {
-        const { token, target_lang, makeSeparateFolder } = await getTranslationSettings();
+        const { apiProviderToken, target_lang, makeSeparateFolder } = await getTranslationSettings();
         const selectedText = window.getSelection().toString();
-        const translatedText = await translate_html(selectedText, token, target_lang).catch((e) => {
+        const translatedText = await translate_html(selectedText, apiProviderToken, target_lang).catch((e) => {
             new ErrorDialog(e.message);
         });
         if (!translatedText) {

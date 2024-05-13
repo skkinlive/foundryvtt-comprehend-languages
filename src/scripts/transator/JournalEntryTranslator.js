@@ -5,7 +5,7 @@ import {
     _split_html,
     translate_html,
     getTranslationSettings,
-    dialogTokenMissing,
+    dialogApiProviderTokenMissing,
     determineFolder,
     translate_text,
     determineNewName,
@@ -18,14 +18,14 @@ export class JournalEntryTranslator extends Translator {
      * @returns {Promise<void>}
      */
     async translateButton(documentToTranslate) {
-        const { token, target_lang, makeSeparateFolder, translateInPlace } = await getTranslationSettings();
-        if (!token) {
-            dialogTokenMissing();
+        const { apiProviderToken, target_lang, makeSeparateFolder, translateInPlace } = await getTranslationSettings();
+        if (!apiProviderToken) {
+            dialogApiProviderTokenMissing();
         } else {
             if (!translateInPlace) {
-                await this.translateAndCreateJournalEntry(documentToTranslate, target_lang, makeSeparateFolder, token);
+                await this.translateAndCreateJournalEntry(documentToTranslate, target_lang, makeSeparateFolder, apiProviderToken);
             } else {
-                await this.translateAndReplaceOriginal(documentToTranslate, target_lang, token);
+                await this.translateAndReplaceOriginal(documentToTranslate, target_lang, apiProviderToken);
             }
         }
     }

@@ -4,7 +4,7 @@ import {
     _split_html,
     translate_html,
     getTranslationSettings,
-    dialogTokenMissing,
+    dialogApiProviderTokenMissing,
     determineFolder,
     translate_text,
     determineNewName,

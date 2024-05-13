@@ -1,5 +1,6 @@
 import { ComprehendLanguagesTranslator } from "./ComprehendLanguagesTranslator";
 import CONSTANTS from "./constants";
+import Logger from "./lib/Logger";
 
 export const addTranslateButton = async function (app) {
     if (!game.user.isGM) {
@@ -169,13 +170,13 @@ export async function translate_text(text, token, target_lang) {
         let translation = await response.json();
         return translation.translations[0].text;
     } else if (response.status == 456) {
-        throw new Error(
+        throw Logger.error(
             "You have exceeded your monthly DeepL API quota. You will be able to continue translating next month. For more information, check your account on the DeepL website.",
         );
     } else if (response.status == 401 || response.status == 403) {
-        throw new Error("Your token is invalid. Please check your DeepL Token.");
+        throw Logger.error("Your token is invalid. Please check your DeepL Token.");
     } else {
-        throw new Error("Unknown Error");
+        throw Logger.error("Unknown Error");
     }
 }
 
@@ -184,23 +185,23 @@ export function replaceAll(string, search, replace) {
 }
 
 /**
- * @returns {Promise<{token: string;target_lang: string;makeSeparateFolder: boolean;translateInPlace: boolean;}>}
+ * @returns {Promise<{apiProviderToken: string;target_lang: string;makeSeparateFolder: boolean;translateInPlace: boolean;}>}
  */
 export async function getTranslationSettings() {
-    const token = game.settings.get(CONSTANTS.MODULE_ID, CONSTANTS.SETTINGS.DEEPL_TOKEN);
+    const apiProviderToken = game.settings.get(CONSTANTS.MODULE_ID, CONSTANTS.SETTINGS.DEEPL_TOKEN);
     const target_lang = game.settings.get(CONSTANTS.MODULE_ID, CONSTANTS.SETTINGS.TARGET_LANG);
     const makeSeparateFolder = game.settings.get(CONSTANTS.MODULE_ID, CONSTANTS.SETTINGS.SEPARATE_FOLDER);
     const translateInPlace = game.settings.get(CONSTANTS.MODULE_ID, CONSTANTS.SETTINGS.IN_PLACE);
 
     return {
-        token: token,
+        apiProviderToken: apiProviderToken,
         target_lang: target_lang,
         makeSeparateFolder: makeSeparateFolder,
         translateInPlace: translateInPlace,
     };
 }
 
-export async function dialogTokenMissing() {
+export async function dialogApiProviderTokenMissing() {
     let d = new Dialog({
         title: "DeepL Token missing",
         content: "<p>Error: No DeepL token found. <br> Please add a DeepL Token to your Settings</p>",
@@ -217,10 +218,10 @@ export async function dialogTokenMissing() {
 
 /**
  *
- * @param {JournalEntry | Item} translatable
- * @param {string} target_lang
+ * @param {JournalEntry | Item} translatable The journal entry or item to translate
+ * @param {string} target_lang The code nation to translate
  * @param {boolean} makeSeparateFolder
- * @returns {Promise<Folder>}
+ * @returns {Promise<Folder>} The new folder found or created
  */
 export async function determineFolder(translatable, target_lang, makeSeparateFolder) {
     var newFolder = null;
@@ -263,18 +264,20 @@ export async function determineFolder(translatable, target_lang, makeSeparateFol
 /**
  *
  * @param {JournalEntry | JournalEntryPage | Item} documentToTranslate
- * @returns
+ * @returns {string} New name of the document
  */
 export async function determineNewName(documentToTranslate) {
-    const { token, target_lang, makeSeparateFolder } = await getTranslationSettings();
+    const { apiProviderToken, target_lang, makeSeparateFolder } = await getTranslationSettings();
     let newName = "";
     if (game.settings.get(CONSTANTS.MODULE_ID, CONSTANTS.SETTINGS.TRANSLATE_JOURNAL_NAME)) {
-        newName = await translate_text(documentToTranslate.name, token, target_lang);
+        newName = await translate_text(documentToTranslate.name, apiProviderToken, target_lang);
     } else {
         if (documentToTranslate instanceof JournalEntryPage) {
             return documentToTranslate.name;
         }
         newName = target_lang + "_" + documentToTranslate.name;
+        // TODO a little better ?
+        //newName = documentToTranslate.name + "|" + countryCodeEmoji(target_lang);
     }
     return newName;
 }
@@ -300,4 +303,61 @@ export function parseAsArray(obj) {
         arr = [obj];
     }
     return arr;
+}
+
+
+/**
+ * convert country code to corresponding flag emoji
+ * @param {string} cc - country code string
+ * @returns {string} flag emoji
+ */
+export function countryCodeEmoji(cc) {
+  // country code regex
+  const CC_REGEX = /^[a-z]{2}$/i;
+
+  // flag emoji use 2 regional indicator symbols, and each symbol is 2 chars
+  const FLAG_LENGTH = 4;
+
+  // offset between uppercase ascii and regional indicator symbols
+  const OFFSET = 127397;
+
+  if (!CC_REGEX.test(cc)) {
+    const type = typeof cc;
+    throw Logger.error(
+      `cc argument must be an ISO 3166-1 alpha-2 string, but got '${
+        type === 'string' ? cc : type
+      }' instead.`,
+    );
+  }
+
+  const codePoints = [...cc.toUpperCase()].map(c => c.codePointAt() + OFFSET);
+  return String.fromCodePoint(...codePoints);
+}
+
+/**
+ * convert flag emoji to corresponding country code
+ * @param {string} flag - flag emoji
+ * @returns {string} country code string
+ */
+export function emojiCountryCode(flag) {
+  // country code regex
+  const CC_REGEX = /^[a-z]{2}$/i;
+
+  // flag emoji use 2 regional indicator symbols, and each symbol is 2 chars
+  const FLAG_LENGTH = 4;
+
+  // offset between uppercase ascii and regional indicator symbols
+  const OFFSET = 127397;
+
+  if (flag.length !== FLAG_LENGTH) {
+    const type = typeof flag;
+    throw Logger.error(
+      `flag argument must be a flag emoji, but got '${
+        type === 'string' ? flag : type
+      }' instead.`,
+    );
+  }
+
+  const codePoints = [...flag].map(c => c.codePointAt() - OFFSET);
+  return String.fromCodePoint(...codePoints);
 }

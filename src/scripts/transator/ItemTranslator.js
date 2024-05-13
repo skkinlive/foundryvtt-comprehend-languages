@@ -5,7 +5,7 @@ import {
     _split_html,
     translate_html,
     getTranslationSettings,
-    dialogTokenMissing,
+    dialogApiProviderTokenMissing,
     determineFolder,
     translate_text,
     determineNewName,
@@ -22,14 +22,14 @@ export class ItemTranslator extends Translator {
      * @returns {Promise<void>}
      */
     async translateButton(documentToTranslate) {
-        const { token, target_lang, makeSeparateFolder, translateInPlace } = await getTranslationSettings();
-        if (!token) {
-            dialogTokenMissing();
+        const { apiProviderToken, target_lang, makeSeparateFolder, translateInPlace } = await getTranslationSettings();
+        if (!apiProviderToken) {
+            dialogApiProviderTokenMissing();
         } else {
             if (!translateInPlace) {
-                await this.translateAndCreateItem(documentToTranslate, token, target_lang, makeSeparateFolder);
+                await this.translateAndCreateItem(documentToTranslate, apiProviderToken, target_lang, makeSeparateFolder);
             } else {
-                await this.translateAndReplaceOriginal(documentToTranslate, token, target_lang);
+                await this.translateAndReplaceOriginal(documentToTranslate, apiProviderToken, target_lang);
             }
         }
     }
