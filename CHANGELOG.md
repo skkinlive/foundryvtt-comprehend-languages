@@ -1,4 +1,4 @@
-### 2.3.0 (2024-05-12)
+### 2.3.0-BETA (2024-05-12)
 
 * Complete rewrite of the project, structure standard, ecc.
 * Add vite to build release on demand on github
