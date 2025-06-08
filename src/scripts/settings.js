@@ -12,27 +12,25 @@ export const registerSettings = function () {
         restricted: true,
     });
 
-    // =========================================================================
-
     for (let [name, data] of Object.entries(SETTINGS.GET_DEFAULT())) {
         game.settings.register(CONSTANTS.MODULE_ID, name, data);
     }
 
-    // ==========================================================================
-
-    game.settings.register(CONSTANTS.MODULE_ID, "geminiApiKey", { // 키 이름을 "geminiApiKey"로 변경 (기존 것과 겹치지 않게)
-    name: `${CONSTANTS.MODULE_ID}.SETTINGS.ApiKeyName`, // ko.json에서 사용할 키
-    config: true,
-    hint: `${CONSTANTS.MODULE_ID}.SETTINGS.ApiKeyHint`, // ko.json에서 사용할 키
-    type: String,
-    default: "",
-    scope: "world",
-});
-
-    game.settings.register(CONSTANTS.MODULE_ID, CONSTANTS.SETTINGS.TARGET_LANG, {
-        name: "Target Language",
+    // MODIFIED: Replaced DeepL Token with Gemini API Key
+    game.settings.register(CONSTANTS.MODULE_ID, "geminiApiKey", {
+        name: `${CONSTANTS.MODULE_ID}.SETTINGS.ApiKeyName`,
+        hint: `${CONSTANTS.MODULE_ID}.SETTINGS.ApiKeyHint`,
         config: true,
-        hint: "What should your target language be",
+        type: String,
+        default: "",
+        scope: "world",
+    });
+
+    // MODIFIED: Added Korean (KO) to choices
+    game.settings.register(CONSTANTS.MODULE_ID, CONSTANTS.SETTINGS.TARGET_LANG, {
+        name: `${CONSTANTS.MODULE_ID}.SETTINGS.TargetLangName`,
+        hint: `${CONSTANTS.MODULE_ID}.SETTINGS.TargetLangHint`,
+        config: true,
         type: String,
         default: "DE",
         choices: {
@@ -49,7 +47,7 @@ export const registerSettings = function () {
             HU: "Hungarian",
             IT: "Italian",
             JA: "Japanese",
-            KO: "Korean",
+            KO: "Korean (한국어)", // ADDED
             LT: "Lithuanian",
             LV: "Latvian",
             NL: "Dutch",
@@ -64,6 +62,22 @@ export const registerSettings = function () {
         },
         scope: "world",
     });
+
+    // MODIFIED: Commented out DeepL-specific 'formality' setting
+    /*
+    game.settings.register(CONSTANTS.MODULE_ID, CONSTANTS.SETTINGS.FORMALITY, {
+        name: "Formality",
+        config: true,
+        hint: "How formal should the translations be (if the language supports it)",
+        type: String,
+        default: "prefer_more",
+        choices: {
+            prefer_more: "Prefer more formal",
+            prefer_less: "Prefer less formal",
+        },
+        scope: "world",
+    });
+    */
 
     game.settings.register(CONSTANTS.MODULE_ID, CONSTANTS.SETTINGS.ICON_ONLY, {
         name: "Icon Only",
@@ -108,7 +122,6 @@ export const registerSettings = function () {
         scope: "world",
     });
 
-    // ========================================================================
     game.settings.register(CONSTANTS.MODULE_ID, "debug", {
         name: `${CONSTANTS.MODULE_ID}.setting.debug.name`,
         hint: `${CONSTANTS.MODULE_ID}.setting.debug.hint`,
@@ -117,10 +130,6 @@ export const registerSettings = function () {
         default: false,
         type: Boolean,
     });
-
-    // ==============================================
-    // Keybindings
-    // ==============================================
 
     game.keybindings.register(CONSTANTS.MODULE_ID, "translate-highlighted-text", {
         name: "Translate highlighted text",
@@ -131,34 +140,21 @@ export const registerSettings = function () {
             return true;
         },
     });
-    // We replace the games window registry with a proxy object so we can intercept
-    // every new application window creation event.
+    
     const handler = {
         ownKeys: (target) => {
             return Reflect.ownKeys(target).filter((app) => {
                 const appId = parseInt(app);
                 if (!isNaN(appId)) {
-                    // TODO DO SOMETHING ??
                     return false;
                 }
                 return true;
             });
         },
-        /**
-         *
-         * @param {Record<number, Application>} obj
-         * @param {number} prop
-         * @param {FormApplication} value
-         * @returns
-         */
         set: (obj, prop, value) => {
             const result = Reflect.set(obj, prop, value);
-            // console.log("Intercept ui-window create", value);
             if (value && value.object) {
-                if (value.object instanceof JournalEntry) {
-                    addTranslateButton(value).catch((err) => console.error(err));
-                }
-                if (value.object instanceof Item) {
+                if (value.object instanceof JournalEntry || value.object instanceof Item) {
                     addTranslateButton(value).catch((err) => console.error(err));
                 }
             }
@@ -166,83 +162,13 @@ export const registerSettings = function () {
         },
     };
 
-    ui.windows = new Proxy(ui.windows, handler); // eslint-disable-line no-undef
-
-    console.log("Installed window interceptor", ui.windows); // eslint-disable-line no-undef
+    ui.windows = new Proxy(ui.windows, handler);
+    console.log("Comprehend Languages | Installed window interceptor");
 };
-
-export async function applyDefaultSettings() {
-    const settings = SETTINGS.GET_SYSTEM_DEFAULTS();
-    for (const [name, data] of Object.entries(settings)) {
-        await game.settings.set(CONSTANTS.MODULE_ID, name, data.default);
-    }
-    await game.settings.set(CONSTANTS.MODULE_ID, SETTINGS.SYSTEM_VERSION, SYSTEMS.DATA.VERSION);
-    // await patchCurrencySettings();
-}
-
-export function applySystemSpecificStyles(data = false) {
-    // TODO ?
-}
-
-export async function checkSystem() {
-    if (!SYSTEMS.HAS_SYSTEM_SUPPORT) {
-        if (game.settings.get(CONSTANTS.MODULE_ID, SETTINGS.SYSTEM_NOT_FOUND_WARNING_SHOWN)) return;
-
-        let settingsValid = true;
-        for (const [name, data] of Object.entries(SETTINGS.GET_DEFAULT())) {
-            settingsValid =
-                settingsValid && game.settings.get(CONSTANTS.MODULE_ID, name).length !== new data.type().length;
-        }
-
-        if (settingsValid) return;
-
-        new Dialog({
-            title: game.i18n.localize(`${CONSTANTS.MODULE_ID}.Dialog.systemfound.title`),
-            content: Logger.warn(game.i18n.localize(`${CONSTANTS.MODULE_ID}.Dialog.systemfound.content`), true),
-            buttons: {
-                confirm: {
-                    icon: '<i class="fas fa-check"></i>',
-                    label: game.i18n.localize(`${CONSTANTS.MODULE_ID}.Dialog.systemfound.confirm`),
-                    callback: () => {
-                        applyDefaultSettings();
-                    },
-                },
-                cancel: {
-                    icon: '<i class="fas fa-times"></i>',
-                    label: game.i18n.localize("No"),
-                },
-            },
-            default: "cancel",
-        }).render(true);
-
-        return game.settings.set(CONSTANTS.MODULE_ID, SETTINGS.SYSTEM_NOT_FOUND_WARNING_SHOWN, true);
-    }
-
-    if (game.settings.get(CONSTANTS.MODULE_ID, SETTINGS.SYSTEM_FOUND) || SYSTEMS.DATA.INTEGRATION) {
-        const currentVersion = game.settings.get(CONSTANTS.MODULE_ID, SETTINGS.SYSTEM_VERSION);
-        const newVersion = SYSTEMS.DATA.VERSION;
-        debug(`Comparing system version - Current: ${currentVersion} - New: ${newVersion}`);
-        if (foundry.utils.isNewerVersion(newVersion, currentVersion)) {
-            debug(`Applying system settings for ${game.system.title}`);
-            await applyDefaultSettings();
-        }
-        return;
-    }
-
-    await game.settings.set(CONSTANTS.MODULE_ID, SETTINGS.SYSTEM_FOUND, true);
-
-    if (game.settings.get(CONSTANTS.MODULE_ID, SETTINGS.SYSTEM_NOT_FOUND_WARNING_SHOWN)) {
-        Logger.dialogWarning(game.i18n.localize(`${CONSTANTS.MODULE_ID}.Dialog.nosystemfound.content`));
-    }
-
-    return applyDefaultSettings();
-}
 
 class ResetSettingsDialog extends FormApplication {
     constructor(...args) {
-        //@ts-ignore
         super(...args);
-        //@ts-ignore
         return new Dialog({
             title: game.i18n.localize(`${CONSTANTS.MODULE_ID}.dialogs.resetsettings.title`),
             content:
@@ -261,7 +187,6 @@ class ResetSettingsDialog extends FormApplication {
                             Logger.log(`Reset setting '${setting.key}'`);
                             await setting.delete();
                         }
-                        //window.location.reload();
                     },
                 },
                 cancel: {
@@ -272,7 +197,5 @@ class ResetSettingsDialog extends FormApplication {
             default: "cancel",
         });
     }
-    async _updateObject(event, formData) {
-        // do nothing
-    }
+    async _updateObject(event, formData) {}
 }
