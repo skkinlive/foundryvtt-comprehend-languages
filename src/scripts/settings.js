@@ -20,14 +20,14 @@ export const registerSettings = function () {
 
     // ==========================================================================
 
-    game.settings.register(CONSTANTS.MODULE_ID, CONSTANTS.SETTINGS.DEEPL_TOKEN, {
-        name: "DeepL Token",
-        config: true,
-        hint: "Insert your DeepL Token here",
-        type: String,
-        default: "",
-        scope: "world",
-    });
+    game.settings.register(CONSTANTS.MODULE_ID, "geminiApiKey", { // 키 이름을 "geminiApiKey"로 변경 (기존 것과 겹치지 않게)
+    name: `${CONSTANTS.MODULE_ID}.SETTINGS.ApiKeyName`, // ko.json에서 사용할 키
+    config: true,
+    hint: `${CONSTANTS.MODULE_ID}.SETTINGS.ApiKeyHint`, // ko.json에서 사용할 키
+    type: String,
+    default: "",
+    scope: "world",
+});
 
     game.settings.register(CONSTANTS.MODULE_ID, CONSTANTS.SETTINGS.TARGET_LANG, {
         name: "Target Language",
@@ -49,6 +49,7 @@ export const registerSettings = function () {
             HU: "Hungarian",
             IT: "Italian",
             JA: "Japanese",
+            KO: "Korean",
             LT: "Lithuanian",
             LV: "Latvian",
             NL: "Dutch",
@@ -64,18 +65,6 @@ export const registerSettings = function () {
         scope: "world",
     });
 
-    game.settings.register(CONSTANTS.MODULE_ID, CONSTANTS.SETTINGS.FORMALITY, {
-        name: "Formality",
-        config: true,
-        hint: "How formal should the translations be (if the language supports it)",
-        type: String,
-        default: "prefer_more",
-        choices: {
-            prefer_more: "Prefer more formal",
-            prefer_less: "Prefer less formal",
-        },
-        scope: "world",
-    });
     game.settings.register(CONSTANTS.MODULE_ID, CONSTANTS.SETTINGS.ICON_ONLY, {
         name: "Icon Only",
         config: true,
