@@ -1,0 +1,19 @@
+{
+    "comprehend-languages": {
+        "SETTINGS": {
+            "ApiKey": "Gemini API 키",
+            "ApiKeyHint": "Google AI Studio에서 발급받은 Gemini API 키를 입력하세요.",
+            "TargetLang": "기본 번역 언어",
+            "TargetLangHint": "저널을 번역할 기본 목표 언어를 선택하세요. (예: KO, JA, EN-US)",
+            "ProFeature": "DeepL Pro 사용",
+            "ProFeatureHint": "이 설정은 더 이상 사용되지 않습니다."
+        },
+        "JOURNAL": {
+            "TranslateButton": "Gemini로 번역하기",
+            "TranslateTitle": "문서 번역"
+        },
+        "ITEM": {
+            "TranslateButton": "설명 번역"
+        }
+    }
+}
