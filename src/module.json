@@ -38,6 +38,11 @@
             "lang": "en",
             "name": "English",
             "path": "languages/en.json"
+        },
+        {
+            "lang": "ko",
+            "name": "Korean (한국어)",
+            "path": "languages/ko.json"
         }
     ],
     "url": "https://github.com/meneltamar/fvtt-comprehend-languages",
