@@ -1,19 +1,29 @@
 {
     "comprehend-languages": {
         "SETTINGS": {
-            "ApiKey": "Gemini API 키",
+            "ApiKeyName": "Gemini API 키",
             "ApiKeyHint": "Google AI Studio에서 발급받은 Gemini API 키를 입력하세요.",
-            "TargetLang": "기본 번역 언어",
-            "TargetLangHint": "저널을 번역할 기본 목표 언어를 선택하세요. (예: KO, JA, EN-US)",
-            "ProFeature": "DeepL Pro 사용",
-            "ProFeatureHint": "이 설정은 더 이상 사용되지 않습니다."
+            "TargetLangName": "기본 번역 언어",
+            "TargetLangHint": "콘텐츠를 번역할 기본 목표 언어를 선택하세요. (예: KO, EN, JA)",
+            "FormalityName": "격식 (사용 안함)",
+            "FormalityHint": "이 설정은 Gemini API에서 사용되지 않습니다."
         },
-        "JOURNAL": {
-            "TranslateButton": "Gemini로 번역하기",
-            "TranslateTitle": "문서 번역"
+        "BUTTONS": {
+            "Translate": "Gemini로 번역"
         },
-        "ITEM": {
-            "TranslateButton": "설명 번역"
+        "NOTIFICATIONS": {
+            "TranslateInfo": "Gemini로 번역 중... 잠시만 기다려주세요.",
+            "TranslateSuccess": "번역이 완료되었습니다.",
+            "TranslateError": "번역에 실패했습니다. F12를 눌러 콘솔 로그를 확인하세요.",
+            "ApiKeyMissing": "모듈 설정에서 Gemini API 키가 설정되지 않았습니다."
+        },
+        "dialogs": {
+            "resetsettings": {
+                "title": "설정 초기화",
+                "content": "정말로 Comprehend Languages 모듈의 모든 설정을 초기화하시겠습니까?",
+                "confirm": "확인",
+                "cancel": "취소"
+            }
         }
     }
 }
